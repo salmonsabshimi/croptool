@@ -4,15 +4,14 @@ import pytesseract
 import os
 
 # === CONFIG ===
-pdf_path = "S3D4_AFT3.pdf"
-output_folder = "ocr_all_pages"
-final_output_pdf = "S3D4_AFT3_Cropped.pdf"
+pdf_path = "S3D4_AFT3.pdf" #change this to your document 
+output_folder = "ocr_all_pages" #change this to change the name of your output folder
+final_output_pdf = "S3D4_AFT3_Cropped.pdf" #change this name to desired name
 dpi = 300
 
 # Create folder to store cropped images
 os.makedirs(output_folder, exist_ok=True)
 
-# Open the full PDF
 doc = fitz.open(pdf_path)
 cropped_images = []
 
@@ -33,7 +32,6 @@ for i in range(1, len(doc)):
                 y_cutoff = data['top'][j]
                 break
 
-    # Define crop box
     if y_cutoff:
         crop_box = (0, 200, width, y_cutoff - 10)
         print(f"[Page {i+1}] Found cutoff at y = {y_cutoff}")
@@ -41,7 +39,6 @@ for i in range(1, len(doc)):
         crop_box = (0, 200, width, int(height * 0.5))
         print(f"[Page {i+1}] Fallback cropping used")
 
-    # Crop and save
     cropped = img.crop(crop_box)
     save_path = os.path.join(output_folder, f"page_{i+1}.png")
     cropped.save(save_path)
@@ -56,6 +53,6 @@ if cropped_images:
         save_all=True,
         append_images=cropped_images[1:]
     )
-    print(f"\n✅ ALL DONE! Cropped PDF saved as: {final_output_pdf}")
+    print(f"\n ALL DONE! Cropped PDF saved as: {final_output_pdf}")
 else:
-    print("⚠️ No pages were saved.")
+    print("Error: No pages saved.")
